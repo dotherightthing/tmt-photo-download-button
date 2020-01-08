@@ -1,0 +1,29 @@
+{
+  "name": "tmt-photo-download-button",
+  "version": "1.0.0",
+  "description": "Adds a download button to photos on TrackMyTour.",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotherightthing/tmt-photo-download-button.git"
+  },
+  "keywords": [
+    "chrome",
+    "extension",
+    "TrackMyTour",
+    "travel",
+    "photos"
+  ],
+  "author": "dan@dotherightthing.co.nz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotherightthing/tmt-photo-download-button/issues"
+  },
+  "homepage": "https://github.com/dotherightthing/tmt-photo-download-button#readme",
+  "dependencies": {
+    "jquery": "^3.4.1"
+  }
+}
