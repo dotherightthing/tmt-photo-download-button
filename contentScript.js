@@ -80,15 +80,12 @@ var TmtPhotoDownloadButton = (function () {
           var tag = target.tagName; // img / mutationRecord.target
           var attr = mutationRecord.attributeName;
           var imgRegx = new RegExp(/https:\/\/trackmytour.com\/img\/standard/);
+          var classRegx = new RegExp(/v-image__image/);
 
           // background images (gallery)
 
           if ((tag === 'DIV') && (attr === 'class')) {
-
-            var classRegx = /v-image__image/;
-
             if (target.className.match(classRegx)) {
-
               if (target.style.backgroundImage && target.style.backgroundImage.match(imgRegx)) {
                 var parent = target.parentNode;
                 var img = target.style.backgroundImage;
@@ -106,6 +103,7 @@ var TmtPhotoDownloadButton = (function () {
             if (target.src.match(imgRegx)) {
               var parent = mutationRecord.target.parentNode;
               var img = target.src;
+              img = img.replace('?scale=1', '');
 
               _addDownloadButton(parent, img);
             }
