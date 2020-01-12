@@ -17,24 +17,122 @@ var TmtPhotoDownloadButton = (function () {
   'use strict';
 
   /**
-   * @function _addMutationObserver
-   * @summary Detect when an element changes, and run a callback.
+   * @function _addDownloadButton
+   * @summary Add a download button.
+   * @memberof TmtPhotoDownloadButton
+   * @protected
+   *
+   * @param {external:jQuery} parentNode - Node to append the button to
+   * @param {string} imgSrc - Path to image
+   */
+  var _addDownloadButton = function (parentNode, imgSrc) {
+    var downloadLink = document.createElement('a');
+
+    downloadLink.setAttribute('class', 'dtrt-download-button');
+    parentNode.appendChild(downloadLink);
+
+    var $button = $('.dtrt-download-button');
+
+    $button.attr({
+      href: imgSrc,
+      target: '_blank'
+    });
+
+    $button.css({
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      display: 'grid',
+      'justify-content': 'center',
+      'text-decoration': 'none',
+    });
+
+    $button.append('<span>Open photo in new tab</span>');
+
+    $button.children().css({
+      'background-color': 'rgba(0, 0, 0, .85)',
+      color: '#fff',
+      'line-height': 0,
+      padding: '2rem',
+    });
+  };
+
+  /**
+   * @function _watchForTmtPhotoEnlargement
+   * @summary When the photo display modal appears, and a download button.
    * @memberof TmtPhotoDownloadButton
    * @protected
    *
    * @param {external:jQuery} $elements - Elements to watch
-   * @param {string} mutationType - Mutation type (attributes|characterData|childList)
-   * @param {string} attribute - Specific attribute name
-   * @returns {object} mutationObserver
+   * @todo Fix multiple download buttons being displayed on top of first gallery image
+   * @todo Fix broken gallery URL - 
+   * https://trackmytour.com/url(%22https:/trackmytour.com/img/standard/889183b3-d1dd-4aeb-a353-670aa5854777/?scale=1%22%29
    */
-  var _addMutationObserver = function ($elements, mutationType, attribute) {
+  var _watchForTmtPhotoEnlargement = function ($elements) {
 
     // The mutations to observe
+    // https://stackoverflow.com/a/40195712/6850747
+
+    // innerHTML
+    // var config = { characterData: true, attributes: false, childList: false, subtree: true };
+
+    // textContent
+    // var config = { characterData: false, attributes: false, childList: true, subtree: false };
+
     var config = {
-      attributes: (mutationType === 'attributes'),
-      attributeOldValue: (mutationType === 'attributes'),
-      childList: (mutationType === 'childList'),
-      subtree: (mutationType === 'childList'),
+      attributes: true,
+      attributesFilter: ['class'],
+      characterData: false,
+      childList: false,
+      subtree: true,
+    };
+
+    var callback = function (mutationsList) {
+
+      // wait for the image modal
+      // because only this contains the 'standard' (large) size
+      // though this appears to be compressed
+      // perhaps there is also an original size available somewhere
+        
+      $.each(mutationsList, function (i) {
+        var mutationRecord = mutationsList[i];
+
+        if (mutationRecord.type === 'attributes') {
+          var target = mutationRecord.target;
+          var tag = target.tagName; // img / mutationRecord.target
+          var attr = mutationRecord.attributeName;
+          var regx = new RegExp(/https:\/\/trackmytour.com\/img\/standard/);
+
+          // background-image: url("https://trackmytour.com/img/standard/5bf0bbb6-864b-4c75-b7b8-0aa5767a464e/?scale=1"); background-position: center center;
+
+          // background images (gallery)
+
+          // div.v-image__image.v-image__image--contain
+          if ((tag === 'DIV') && (attr === 'class')) {
+
+            if (target.classList[0] === 'v-image__image') {
+
+              if (target.style.backgroundImage && target.style.backgroundImage.match(regx)) {
+                var parent = mutationRecord.target.parentNode;
+
+                _addDownloadButton(parent, target.style.backgroundImage);
+              }
+            }
+          }
+
+          // inline images
+
+          if ((tag === 'IMG') && (attr === 'src')) {
+            if (target.src.match(regx)) {
+              var parent = mutationRecord.target.parentNode;
+
+              _addDownloadButton(parent, target.src);
+            }
+          }
+        }
+      });
     };
 
     $elements.each(function () {
@@ -44,19 +142,7 @@ var TmtPhotoDownloadButton = (function () {
       var targetNode = $element.get(0);
 
       // Create an observer instance with a callback function
-      var observer = new MutationObserver(function (mutationsList, observer) {
-        $.each(mutationsList, function (i) {
-          var mutation = mutationsList[i];
-
-          if (mutation.type === mutationType) {
-            if ((mutationType === 'attributes') && (typeof attribute !== 'undefined') && (mutation.attributeName === attribute)) {
-              // debugger;
-            } else {
-              // debugger;
-            }
-          }
-        });
-      });
+      var observer = new MutationObserver(callback);
 
       // Start observing the target node for configured mutations
       observer.observe(targetNode, config);
@@ -67,46 +153,18 @@ var TmtPhotoDownloadButton = (function () {
   };
 
   /**
-   * @function appendText
-   * @summary Append text to an element
+   * @function init
+   * @summary Initialise the app.
    * @memberof TmtPhotoDownloadButton
    * @public
-   *
-   * @param {string} elementSelector - CSS element selector
-   * @param {string} text - Text to append
    */
-  var appendText = function (elementSelector, text) {
-    try {
-      var $el = $(elementSelector);
-      var oldText = $el.text;
-
-      $el.text(oldText + text);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  /**
-   * @function detectPhotoViewerLaunched
-   * @summary Detect when a photo is open in the photo viewer modal.
-   * @memberof TmtPhotoDownloadButton
-   * @public
-   *
-   * @param {string} elementSelector - CSS element selector
-   * @param {string} text - Text to append
-   */
-  var detectPhotoViewerLaunched = function () {
-    _addMutationObserver($('[data-app]'), 'childList');
+  var init = function () {
+    _watchForTmtPhotoEnlargement($('[data-app]'));
   };
 
   return {
-    appendText: appendText,
-    detectPhotoViewerLaunched: detectPhotoViewerLaunched
+    init: init,
   };
 }());
 
-// massive timeout to allow vuetify to set up
-setTimeout(function () {
-  TmtPhotoDownloadButton.detectPhotoViewerLaunched();
-  // TmtPhotoDownloadButton.appendText('h1', '!!!');
-}, 5000);
+TmtPhotoDownloadButton.init();
