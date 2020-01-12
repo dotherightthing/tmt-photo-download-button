@@ -80,21 +80,23 @@ var TmtPhotoDownloadButton = (function () {
           var target = mutationRecord.target;
           var tag = target.tagName; // img / mutationRecord.target
           var attr = mutationRecord.attributeName;
-          var regx = new RegExp(/https:\/\/trackmytour.com\/img\/standard/);
-
-          // background-image: url("https://trackmytour.com/img/standard/5bf0bbb6-864b-4c75-b7b8-0aa5767a464e/?scale=1"); background-position: center center;
+          var imgRegx = new RegExp(/https:\/\/trackmytour.com\/img\/standard/);
 
           // background images (gallery)
 
           // div.v-image__image.v-image__image--contain
           if ((tag === 'DIV') && (attr === 'class')) {
 
-            if (target.classList[0] === 'v-image__image') {
+            var classRegx = /v-image/;
 
-              if (target.style.backgroundImage && target.style.backgroundImage.match(regx)) {
-                var parent = mutationRecord.target.parentNode;
+            if (target.className.match(classRegx)) {
 
-                _addDownloadButton(parent, target.style.backgroundImage);
+              if (target.style.backgroundImage && target.style.backgroundImage.match(imgRegx)) {
+                var img = target.style.backgroundImage;
+                img = img.replace('url("', '');
+                img = img.replace('?scale=1")', '');
+
+                _addDownloadButton(target, img);
               }
             }
           }
@@ -102,7 +104,7 @@ var TmtPhotoDownloadButton = (function () {
           // inline images
 
           if ((tag === 'IMG') && (attr === 'src')) {
-            if (target.src.match(regx)) {
+            if (target.src.match(imgRegx)) {
               var parent = mutationRecord.target.parentNode;
 
               _addDownloadButton(parent, target.src);
