@@ -33,7 +33,9 @@ var TmtPhotoDownloadButton = (function () {
     buttonHtml += '<span>Open photo in new tab</span>';
     buttonHtml += '</a>';
 
-    $parent.append(buttonHtml);
+    if (! $parent.find('.dtrt-download-button').length) {
+      $parent.append(buttonHtml);
+    }
   };
 
   /**
@@ -43,8 +45,6 @@ var TmtPhotoDownloadButton = (function () {
    * @protected
    *
    * @param {external:jQuery} $elements - Elements to watch
-   * @todo Fix multiple download buttons being injected into same element with same URL in gallery.
-   * @todo Fix button not clickable in gallery.
    */
   var _watchForTmtPhotoEnlargement = function ($elements) {
 
@@ -83,19 +83,19 @@ var TmtPhotoDownloadButton = (function () {
 
           // background images (gallery)
 
-          // div.v-image__image.v-image__image--contain
           if ((tag === 'DIV') && (attr === 'class')) {
 
-            var classRegx = /v-image/;
+            var classRegx = /v-image__image/;
 
             if (target.className.match(classRegx)) {
 
               if (target.style.backgroundImage && target.style.backgroundImage.match(imgRegx)) {
+                var parent = target.parentNode;
                 var img = target.style.backgroundImage;
                 img = img.replace('url("', '');
                 img = img.replace('?scale=1")', '');
 
-                _addDownloadButton(target, img);
+                _addDownloadButton(parent, img);
               }
             }
           }
@@ -105,8 +105,9 @@ var TmtPhotoDownloadButton = (function () {
           if ((tag === 'IMG') && (attr === 'src')) {
             if (target.src.match(imgRegx)) {
               var parent = mutationRecord.target.parentNode;
+              var img = target.src;
 
-              _addDownloadButton(parent, target.src);
+              _addDownloadButton(parent, img);
             }
           }
         }
