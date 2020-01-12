@@ -25,5 +25,8 @@
   "homepage": "https://github.com/dotherightthing/tmt-photo-download-button#readme",
   "dependencies": {
     "jquery": "^3.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }
