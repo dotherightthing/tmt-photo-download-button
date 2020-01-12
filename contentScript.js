@@ -26,21 +26,14 @@ var TmtPhotoDownloadButton = (function () {
    * @param {string} imgSrc - Path to image
    */
   var _addDownloadButton = function (parentNode, imgSrc) {
-    var downloadLink = document.createElement('a');
+    var $parent = $(parentNode);
+    var buttonHtml = '';
 
-    downloadLink.setAttribute('class', 'dtrt-download-button');
-    parentNode.appendChild(downloadLink);
+    buttonHtml += '<a class="dtrt-download-button" href="' + imgSrc + '" target="_blank">';
+    buttonHtml += '<span>Open photo in new tab</span>';
+    buttonHtml += '</a>';
 
-    var $button = $('.dtrt-download-button');
-
-    $button.attr({
-      href: imgSrc,
-      target: '_blank'
-    });
-
-
-    $button.append('<span>Open photo in new tab</span>');
-
+    $parent.append(buttonHtml);
   };
 
   /**
