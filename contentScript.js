@@ -43,9 +43,8 @@ var TmtPhotoDownloadButton = (function () {
    * @protected
    *
    * @param {external:jQuery} $elements - Elements to watch
-   * @todo Fix multiple download buttons being displayed on top of first gallery image
-   * @todo Fix broken gallery URL - 
-   * https://trackmytour.com/url(%22https:/trackmytour.com/img/standard/889183b3-d1dd-4aeb-a353-670aa5854777/?scale=1%22%29
+   * @todo Fix multiple download buttons being injected into same element with same URL in gallery.
+   * @todo Fix button not clickable in gallery.
    */
   var _watchForTmtPhotoEnlargement = function ($elements) {
 
