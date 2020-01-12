@@ -38,25 +38,9 @@ var TmtPhotoDownloadButton = (function () {
       target: '_blank'
     });
 
-    $button.css({
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      display: 'grid',
-      'justify-content': 'center',
-      'text-decoration': 'none',
-    });
 
     $button.append('<span>Open photo in new tab</span>');
 
-    $button.children().css({
-      'background-color': 'rgba(0, 0, 0, .85)',
-      color: '#fff',
-      'line-height': 0,
-      padding: '2rem',
-    });
   };
 
   /**
