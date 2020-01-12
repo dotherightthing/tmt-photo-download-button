@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    "jsdoc"
+  ],
+  "extends": [
+    "plugin:jsdoc/recommended"
+  ]
+}
